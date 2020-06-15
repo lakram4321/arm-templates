@@ -10,7 +10,7 @@ stages:
     - task: CopyFiles@2
       displayName: 'Copy ARM Template and Parameter Files'
       inputs:
-        SourceFolder: 'MySampleVnet'
+        SourceFolder: 'arm-templates'
         Contents: |
           RAM.CDAS.json
           RAM.CDAS.parameters.json
@@ -44,6 +44,6 @@ stages:
               resourceGroupName: 'ram-netrg'
               location: 'East US'
               templateLocation: 'Linked artifact'
-              csmFile: '$(Pipeline.Workspace)/drop/RAM.CDAS.json'
-              csmParametersFile: '$(Pipeline.Workspace)/drop/RAM.CDAS.parameters.json'
+              csmFile: '$(Pipeline.Workspace)/drop/masterfiles/RAM.CDAS.json'
+              csmParametersFile: '$(Pipeline.Workspace)/drop/masterfiles/RAM.CDAS.parameters.json'
               deploymentMode: 'Incremental'

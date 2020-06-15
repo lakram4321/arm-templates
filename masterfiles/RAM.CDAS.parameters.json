@@ -3,16 +3,16 @@
   "contentVersion": "1.0.0.0",
   "parameters": {
     "environment": {
-      "value": "PreProd"
+      "value": "Dev"
     },
     "systemOwner": {
-      "value": "christopher.gracia@uconn.edu"
+      "value": "ramkcontract@gmail.com"
     },
     "applicationName": {
-      "value": "CDAS"
+      "value": "RAM"
     },
     "virtualNetworkName": {
-      "value": "cdas-preprd-eus2-vnet"
+      "value": "ram-dev-eus-vnet"
     },
     "vnetAddressPrefix": {
       "value": "10.10.0.0/16"
@@ -28,8 +28,8 @@
         {
           "name": "DataTransferSubnet",
           "prefix": "10.10.0.0/27",
-          "nsg": "cdas-preprd-default-nsg",
-          "routeTable": "cdas-preprd-datatransfer-routetable",
+          "nsg": "ram-dev-default-nsg",
+          "routeTable": "ram-dev-datatransfer-routetable",
           "serviceEndpoints": [
             {
               "service": "Microsoft.Storage"
@@ -43,8 +43,8 @@
         {
           "name": "ADLS-AccessSubnet",
           "prefix": "10.10.0.32/27",
-          "nsg": "cdas-preprd-default-nsg",
-          "routeTable": "cdas-preprd-ADLS-routetable",
+          "nsg": "ram-dev-default-nsg",
+          "routeTable": "ram-dev-ADLS-routetable",
           "serviceEndpoints": [
             {
               "service": "Microsoft.Storage"
@@ -55,32 +55,32 @@
         {
           "name": "CoreServiceSubnet",
           "prefix": "10.10.0.64/26",
-          "nsg": "cdas-preprd-default-nsg",
-          "routeTable": "cdas-preprd-coreservice-routetable",
+          "nsg": "ram-dev-default-nsg",
+          "routeTable": "ram-dev-coreservice-routetable",
           "serviceEndpoints": [],
           "delegations": []
         },
         {
           "name": "InformaticaSubnet",
           "prefix": "10.10.1.0/24",
-          "nsg": "cdas-preprd-default-nsg",
-          "routeTable": "cdas-preprd-infa-routetable",
+          "nsg": "ram-dev-default-nsg",
+          "routeTable": "ram-dev-infa-routetable",
           "serviceEndpoints": [],
           "delegations": []
         },
         {
           "name": "InformaticaDataSubnet",
           "prefix": "10.10.2.0/27",
-          "nsg": "cdas-preprd-default-nsg",
-          "routeTable": "cdas-preprd-infa-routetable",
+          "nsg": "ram-dev-default-nsg",
+          "routeTable": "ram-dev-infa-routetable",
           "serviceEndpoints": [],
           "delegations": []
         },
         {
           "name": "TableauServerSubnet",
           "prefix": "10.10.3.0/27",
-          "nsg": "cdas-preprd-default-nsg",
-          "routeTable": "cdas-preprd-tableau-routetable",
+          "nsg": "ram-dev-default-nsg",
+          "routeTable": "ram-dev-tableau-routetable",
           "serviceEndpoints": [
             {
               "service": "Microsoft.Sql"
@@ -91,7 +91,7 @@
         {
           "name": "DeveloperDesktopSubnet",
           "prefix": "10.10.4.0/25",
-          "nsg": "cdas-preprd-default-nsg",
+          "nsg": "ram-dev-default-nsg",
           "routeTable": "",
           "serviceEndpoints": [],
           "delegations": []
@@ -99,7 +99,7 @@
         {
           "name": "DataEngineerDesktopSubnet",
           "prefix": "10.10.5.0/25",
-          "nsg": "cdas-preprd-default-nsg",
+          "nsg": "ram-dev-default-nsg",
           "routeTable": "",
           "serviceEndpoints": [
             {
@@ -111,7 +111,7 @@
         {
           "name": "DatabricksPublicSubnet",
           "prefix": "10.10.6.0/26",
-          "nsg": "cdas-preprd-databricks-nsg",
+          "nsg": "ram-dev-databricks-nsg",
           "routeTable": "",
           "serviceEndpoints": [
             {
@@ -133,7 +133,7 @@
         {
           "name": "DatabricksPrivateSubnet",
           "prefix": "10.10.7.0/26",
-          "nsg": "cdas-preprd-databricks-nsg",
+          "nsg": "ram-dev-databricks-nsg",
           "routeTable": "",
           "serviceEndpoints": [
             {
@@ -152,16 +152,16 @@
         {
           "name": "InformaticaDeveloperDesktopSubnet",
           "prefix": "10.10.8.0/25",
-          "nsg": "cdas-preprd-default-nsg",
-          "routeTable": "cdas-preprd-default-routetable",
+          "nsg": "ram-dev-default-nsg",
+          "routeTable": "ram-dev-default-routetable",
           "serviceEndpoints": [],
           "delegations": []
         },
         {
           "name": "VirtualDesktopSubnet",
           "prefix": "10.10.9.0/24",
-          "nsg": "cdas-preprd-default-nsg",
-          "routeTable": "cdas-preprd-wvd-routetable",
+          "nsg": "ram-dev-default-nsg",
+          "routeTable": "ram-dev-wvd-routetable",
           "serviceEndpoints": [
             {
               "service": "Microsoft.Storage"
@@ -177,7 +177,7 @@
     "networkSecurityGroups": {
       "value": [
         {
-          "name": "cdas-preprd-default-nsg",
+          "name": "ram-dev-default-nsg",
           "securityRules": [
             {
               "name": "Permit_SysAdmin_Subnet_RDP",
@@ -210,7 +210,7 @@
           ]
         },
         {
-          "name": "cdas-preprd-databricks-nsg",
+          "name": "ram-dev-databricks-nsg",
           "securityRules": [
             {
               "name": "Microsoft.Databricks-workspaces_UseOnly_databricks-worker-to-worker-inbound",
@@ -363,7 +363,7 @@
     "routeTables": {
       "value": [
         {
-          "name": "cdas-preprd-default-routetable",
+          "name": "ram-dev-default-routetable",
           "disableBgpRoutePropagation": "false",
           "routes": [
             {
@@ -385,7 +385,7 @@
           ]
         },
         {
-          "name": "cdas-preprd-wvd-routetable",
+          "name": "ram-dev-wvd-routetable",
           "disableBgpRoutePropagation": "false",
           "routes": [
             {
@@ -422,7 +422,7 @@
           ]
         },
         {
-          "name": "cdas-preprd-ADLS-routetable",
+          "name": "ram-dev-ADLS-routetable",
           "disableBgpRoutePropagation": "false",
           "routes": [
             {
@@ -459,7 +459,7 @@
           ]
         },
         {
-          "name": "cdas-preprd-datatransfer-routetable",
+          "name": "ram-dev-datatransfer-routetable",
           "disableBgpRoutePropagation": "false",
           "routes": [
             {
@@ -503,7 +503,7 @@
           ]
         },
         {
-          "name": "cdas-preprd-tableau-routetable",
+          "name": "ram-dev-tableau-routetable",
           "disableBgpRoutePropagation": "false",
           "routes": [
             {
@@ -547,7 +547,7 @@
           ]
         },
         {
-          "name": "cdas-preprd-infa-routetable",
+          "name": "ram-dev-infa-routetable",
           "disableBgpRoutePropagation": "false",
           "routes": [
             {
@@ -591,7 +591,7 @@
           ]
         },
         {
-          "name": "cdas-preprd-coreservice-routetable",
+          "name": "ram-dev-coreservice-routetable",
           "disableBgpRoutePropagation": "false",
           "routes": [
             {
