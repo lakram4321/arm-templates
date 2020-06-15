@@ -1,0 +1,49 @@
+stages:
+- stage: 'Build'
+  displayName: 'Package and Publish ARM Template and Parameter File(s)'
+  jobs: 
+  - job: 'Publish'
+    displayName: 'Package and Publish job'
+    pool:
+      name: Hosted VS2017
+    steps:
+    - task: CopyFiles@2
+      displayName: 'Copy ARM Template and Parameter Files'
+      inputs:
+        SourceFolder: 'MySampleVnet'
+        Contents: |
+          RAM.CDAS.json
+          RAM.CDAS.parameters.json
+        TargetFolder: '$(Build.ArtifactStagingDirectory)'
+    - task: PublishBuildArtifacts@1
+      inputs:
+        PathtoPublish: '$(Build.ArtifactStagingDirectory)'
+        ArtifactName: 'drop'
+        publishLocation: 'Container'
+
+- stage: 'Dev'
+  displayName: 'Deploy ARM Template to RAM Dev'
+  dependsOn: Build
+  jobs:
+  - deployment: Deploy
+    pool:
+      name: Hosted VS2017   
+    environment: Ram Dev
+    strategy:
+      runOnce:
+        deploy:
+          steps:
+          - download: current
+            artifact: drop
+          - task: AzureResourceManagerTemplateDeployment@3
+            inputs:
+              deploymentScope: 'Resource Group'
+              ConnectedServiceName: 'ram-sp'
+              subscriptionName: '1aa050c6-50b5-490f-b5bf-a666645cf349'
+              action: 'Create Or Update Resource Group'
+              resourceGroupName: 'ram-netrg'
+              location: 'East US'
+              templateLocation: 'Linked artifact'
+              csmFile: '$(Pipeline.Workspace)/drop/RAM.CDAS.json'
+              csmParametersFile: '$(Pipeline.Workspace)/drop/RAM.CDAS.parameters.json'
+              deploymentMode: 'Incremental'

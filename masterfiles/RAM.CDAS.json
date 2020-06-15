@@ -1,0 +1,140 @@
+{
+  "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+  "contentVersion": "1.0.0.0",
+  "parameters": {
+    "environment": {
+      "type": "string",
+      "metadata": {
+        "description": "The type of the environment for the deployment; used to tag resources."
+      }
+    },
+    "systemOwner": {
+      "type": "string",
+      "metadata": {
+        "description": "The AIMS owner of the resources in the deployment; used to tag resources."
+      }
+    },
+    "applicationName": {
+      "type": "string",
+      "metadata": {
+        "description": "The name of the application or system the resources are part of; used to tag resources."
+      }
+    },
+    "virtualNetworkName": {
+      "type": "string",
+      "defaultValue": "VNet1",
+      "metadata": {
+        "description": "Name of the virtual network."
+      }
+    },
+    "vnetAddressPrefix": {
+      "type": "string",
+      "defaultValue": "10.1.0.0/16",
+      "metadata": {
+        "description": "Address prefix"
+      }
+    },
+    "DNSServerAddress": {
+      "type": "array",
+      "metadata": {
+        "Description": "The address(es) of the DNS server(s) used by the VNET"
+      }
+    },
+    "subnetArray": {
+      "type": "array",
+      "metadata": {
+        "description": "Array of json objects representing subnets"
+      }
+    },
+    "networkSecurityGroups": {
+      "type": "array"
+    },
+    "routeTables": {
+      "type": "array"
+    }
+  },
+  "variables": {
+  },
+  "resources": [
+    {
+      "condition": "[greater(length(parameters('networkSecurityGroups')), 0)]",
+      "type": "Microsoft.Network/networkSecurityGroups",
+      "apiVersion": "2019-04-01",
+      "copy": {
+        "name": "nsgcopy",
+        "count": "[length(parameters('networkSecurityGroups'))]"
+      },
+      "name": "[parameters('networkSecurityGroups')[copyIndex()].name]",
+      "location": "[resourceGroup().location]",
+      "tags": {
+        "environment": "[parameters('environment')]",
+        "systemOwner": "[parameters('systemOwner')]",
+        "applicationName": "[parameters('applicationName')]"
+      },
+      "properties": {
+        "securityRules": "[if(empty(parameters('networkSecurityGroups')[copyIndex()].securityRules), json('null'), parameters('networkSecurityGroups')[copyIndex()].securityRules)]"
+      }
+    },
+    {
+      "condition": "[greater(length(parameters('routetables')), 0)]",
+      "type": "Microsoft.Network/routeTables",
+      "apiVersion": "2019-04-01",
+      "copy": {
+        "name": "routetablecopy",
+        "count": "[length(parameters('routetables'))]"
+      },
+      "name": "[parameters('routetables')[copyIndex()].name]",
+      "location": "[resourceGroup().location]",
+      "tags": {
+        "environment": "[parameters('environment')]",
+        "systemOwner": "[parameters('systemOwner')]",
+        "applicationName": "[parameters('applicationName')]"
+      },
+      "properties": {
+        "routes": "[parameters('routeTables')[copyIndex()].routes]",
+        "disableBgpRoutePropagation": "[parameters('routeTables')[copyIndex()].disableBgpRoutePropagation]"
+      }
+    },
+    {
+      "type": "Microsoft.Network/virtualNetworks",
+      "apiVersion": "2019-04-01",
+      "name": "[parameters('virtualNetworkName')]",
+      "location": "[resourceGroup().location]",
+      "tags": {
+        "environment": "[parameters('environment')]",
+        "systemOwner": "[parameters('systemOwner')]",
+        "applicationName": "[parameters('applicationName')]"
+      },
+      "dependsOn": [
+        "nsgcopy",
+        "routetablecopy"
+      ],
+      "properties": {
+        "addressSpace": {
+          "addressPrefixes": [
+            "[parameters('vnetAddressPrefix')]"
+          ]
+        },
+        "dhcpOptions": {
+          "dnsServers": "[parameters('DNSServerAddress')]"
+        },
+        "copy": [
+          {
+            "name": "subnets",
+            "count": "[length(parameters('subnetArray'))]",
+            "input": {
+              "name": "[parameters('subnetArray')[copyIndex('subnets')].name]",
+              "properties": {
+                "addressPrefix": "[parameters('subnetArray')[copyIndex('subnets')].prefix]",
+                "networkSecurityGroup": "[if(not(empty(parameters('subnetArray')[copyIndex('subnets')].nsg)), json(concat('{\"id\": \"', resourceId('Microsoft.Network/networkSecurityGroups', parameters('subnetArray')[copyIndex('subnets')].nsg), '\"}')), json('null'))]",
+                "serviceEndpoints": "[parameters('subnetArray')[copyIndex('subnets')].serviceEndpoints]",
+                "delegations": "[parameters('subnetArray')[copyIndex('subnets')].delegations]",
+                "routeTable": "[if(not(empty(parameters('subnetArray')[copyIndex('subnets')].routeTable)), json(concat('{\"id\": \"', resourceId('Microsoft.Network/routeTables', parameters('subnetArray')[copyIndex('subnets')].routeTable), '\"}')), json('null'))]"
+              }
+            }
+          }
+        ]
+      }
+    }
+  ]
+}

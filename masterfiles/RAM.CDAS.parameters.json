@@ -1,0 +1,633 @@
+{
+  "$schema": "http://schema.management.azure.com/schemas/2015-01-01/deploymentParameters.json#",
+  "contentVersion": "1.0.0.0",
+  "parameters": {
+    "environment": {
+      "value": "PreProd"
+    },
+    "systemOwner": {
+      "value": "christopher.gracia@uconn.edu"
+    },
+    "applicationName": {
+      "value": "CDAS"
+    },
+    "virtualNetworkName": {
+      "value": "cdas-preprd-eus2-vnet"
+    },
+    "vnetAddressPrefix": {
+      "value": "10.10.0.0/16"
+    },
+    "DNSServerAddress": {
+      "value": [
+        "10.0.5.4",
+        "10.0.5.5"
+      ]
+    },
+    "subnetArray": {
+      "value": [
+        {
+          "name": "DataTransferSubnet",
+          "prefix": "10.10.0.0/27",
+          "nsg": "cdas-preprd-default-nsg",
+          "routeTable": "cdas-preprd-datatransfer-routetable",
+          "serviceEndpoints": [
+            {
+              "service": "Microsoft.Storage"
+            },
+            {
+              "service": "Microsoft.Sql"
+            }
+          ],
+          "delegations": []
+        },
+        {
+          "name": "ADLS-AccessSubnet",
+          "prefix": "10.10.0.32/27",
+          "nsg": "cdas-preprd-default-nsg",
+          "routeTable": "cdas-preprd-ADLS-routetable",
+          "serviceEndpoints": [
+            {
+              "service": "Microsoft.Storage"
+            }
+          ],
+          "delegations": []
+        },
+        {
+          "name": "CoreServiceSubnet",
+          "prefix": "10.10.0.64/26",
+          "nsg": "cdas-preprd-default-nsg",
+          "routeTable": "cdas-preprd-coreservice-routetable",
+          "serviceEndpoints": [],
+          "delegations": []
+        },
+        {
+          "name": "InformaticaSubnet",
+          "prefix": "10.10.1.0/24",
+          "nsg": "cdas-preprd-default-nsg",
+          "routeTable": "cdas-preprd-infa-routetable",
+          "serviceEndpoints": [],
+          "delegations": []
+        },
+        {
+          "name": "InformaticaDataSubnet",
+          "prefix": "10.10.2.0/27",
+          "nsg": "cdas-preprd-default-nsg",
+          "routeTable": "cdas-preprd-infa-routetable",
+          "serviceEndpoints": [],
+          "delegations": []
+        },
+        {
+          "name": "TableauServerSubnet",
+          "prefix": "10.10.3.0/27",
+          "nsg": "cdas-preprd-default-nsg",
+          "routeTable": "cdas-preprd-tableau-routetable",
+          "serviceEndpoints": [
+            {
+              "service": "Microsoft.Sql"
+            }
+          ],
+          "delegations": []
+        },
+        {
+          "name": "DeveloperDesktopSubnet",
+          "prefix": "10.10.4.0/25",
+          "nsg": "cdas-preprd-default-nsg",
+          "routeTable": "",
+          "serviceEndpoints": [],
+          "delegations": []
+        },
+        {
+          "name": "DataEngineerDesktopSubnet",
+          "prefix": "10.10.5.0/25",
+          "nsg": "cdas-preprd-default-nsg",
+          "routeTable": "",
+          "serviceEndpoints": [
+            {
+              "service": "Microsoft.Storage"
+            }
+          ],
+          "delegations": []
+        },
+        {
+          "name": "DatabricksPublicSubnet",
+          "prefix": "10.10.6.0/26",
+          "nsg": "cdas-preprd-databricks-nsg",
+          "routeTable": "",
+          "serviceEndpoints": [
+            {
+              "service": "Microsoft.Storage"
+            },
+            {
+              "service": "Microsoft.Sql"
+            }
+          ],
+          "delegations": [
+            {
+              "name": "Databricks-Delegate-DatabricksPublicSubnet",
+              "properties": {
+                "serviceName": "Microsoft.Databricks/workspaces"
+              }
+            }
+          ]
+        },
+        {
+          "name": "DatabricksPrivateSubnet",
+          "prefix": "10.10.7.0/26",
+          "nsg": "cdas-preprd-databricks-nsg",
+          "routeTable": "",
+          "serviceEndpoints": [
+            {
+              "service": "Microsoft.Sql"
+            }
+          ],
+          "delegations": [
+            {
+              "name": "Databricks-Delegate-DatabricksPrivateSubnet",
+              "properties": {
+                "serviceName": "Microsoft.Databricks/workspaces"
+              }
+            }
+          ]
+        },
+        {
+          "name": "InformaticaDeveloperDesktopSubnet",
+          "prefix": "10.10.8.0/25",
+          "nsg": "cdas-preprd-default-nsg",
+          "routeTable": "cdas-preprd-default-routetable",
+          "serviceEndpoints": [],
+          "delegations": []
+        },
+        {
+          "name": "VirtualDesktopSubnet",
+          "prefix": "10.10.9.0/24",
+          "nsg": "cdas-preprd-default-nsg",
+          "routeTable": "cdas-preprd-wvd-routetable",
+          "serviceEndpoints": [
+            {
+              "service": "Microsoft.Storage"
+            },
+            {
+              "service": "Microsoft.Web"
+            }
+          ],
+          "delegations": []
+        }
+      ]
+    },
+    "networkSecurityGroups": {
+      "value": [
+        {
+          "name": "cdas-preprd-default-nsg",
+          "securityRules": [
+            {
+              "name": "Permit_SysAdmin_Subnet_RDP",
+              "properties": {
+                "description": "Allows RDP from SystemAdminSubnet",
+                "protocol": "*",
+                "sourcePortRange": "*",
+                "destinationPortRange": "3389",
+                "sourceAddressPrefix": "10.0.4.0/26",
+                "destinationAddressPrefix": "VirtualNetwork",
+                "access": "Allow",
+                "priority": 100,
+                "direction": "Inbound"
+              }
+            },
+            {
+              "name": "Deny_RDP",
+              "properties": {
+                "description": "Prevents RDP from all other sources",
+                "protocol": "*",
+                "sourcePortRange": "*",
+                "destinationPortRange": "3389",
+                "sourceAddressPrefix": "*",
+                "destinationAddressPrefix": "VirtualNetwork",
+                "access": "Deny",
+                "priority": 200,
+                "direction": "Inbound"
+              }
+            }
+          ]
+        },
+        {
+          "name": "cdas-preprd-databricks-nsg",
+          "securityRules": [
+            {
+              "name": "Microsoft.Databricks-workspaces_UseOnly_databricks-worker-to-worker-inbound",
+              "properties": {
+                "description": "Required for worker nodes communication within a cluster.",
+                "protocol": "*",
+                "sourcePortRange": "*",
+                "destinationPortRange": "*",
+                "sourceAddressPrefix": "VirtualNetwork",
+                "destinationAddressPrefix": "VirtualNetwork",
+                "access": "Allow",
+                "priority": 100,
+                "direction": "Inbound",
+                "sourcePortRanges": [],
+                "destinationPortRanges": [],
+                "sourceAddressPrefixes": [],
+                "destinationAddressPrefixes": []
+              }
+            },
+            {
+              "name": "Microsoft.Databricks-workspaces_UseOnly_databricks-control-plane-to-worker-ssh",
+              "properties": {
+                "description": "Required for Databricks control plane management of worker nodes.",
+                "protocol": "tcp",
+                "sourcePortRange": "*",
+                "destinationPortRange": "22",
+                "sourceAddressPrefix": "AzureDatabricks",
+                "destinationAddressPrefix": "VirtualNetwork",
+                "access": "Allow",
+                "priority": 101,
+                "direction": "Inbound",
+                "sourcePortRanges": [],
+                "destinationPortRanges": [],
+                "sourceAddressPrefixes": [],
+                "destinationAddressPrefixes": []
+              }
+            },
+            {
+              "name": "Microsoft.Databricks-workspaces_UseOnly_databricks-control-plane-to-worker-proxy",
+              "properties": {
+                "description": "Required for Databricks control plane communication with worker nodes.",
+                "protocol": "tcp",
+                "sourcePortRange": "*",
+                "destinationPortRange": "5557",
+                "sourceAddressPrefix": "AzureDatabricks",
+                "destinationAddressPrefix": "VirtualNetwork",
+                "access": "Allow",
+                "priority": 102,
+                "direction": "Inbound",
+                "sourcePortRanges": [],
+                "destinationPortRanges": [],
+                "sourceAddressPrefixes": [],
+                "destinationAddressPrefixes": []
+              }
+            },
+            {
+              "name": "Microsoft.Databricks-workspaces_UseOnly_databricks-worker-to-databricks-webapp",
+              "properties": {
+                "description": "Required for workers communication with Databricks Webapp.",
+                "protocol": "tcp",
+                "sourcePortRange": "*",
+                "destinationPortRange": "443",
+                "sourceAddressPrefix": "VirtualNetwork",
+                "destinationAddressPrefix": "AzureDatabricks",
+                "access": "Allow",
+                "priority": 100,
+                "direction": "Outbound",
+                "sourcePortRanges": [],
+                "destinationPortRanges": [],
+                "sourceAddressPrefixes": [],
+                "destinationAddressPrefixes": []
+              }
+            },
+            {
+              "name": "Microsoft.Databricks-workspaces_UseOnly_databricks-worker-to-sql",
+              "properties": {
+                "description": "Required for workers communication with Azure SQL services.",
+                "protocol": "tcp",
+                "sourcePortRange": "*",
+                "destinationPortRange": "3306",
+                "sourceAddressPrefix": "VirtualNetwork",
+                "destinationAddressPrefix": "Sql",
+                "access": "Allow",
+                "priority": 101,
+                "direction": "Outbound",
+                "sourcePortRanges": [],
+                "destinationPortRanges": [],
+                "sourceAddressPrefixes": [],
+                "destinationAddressPrefixes": []
+              }
+            },
+            {
+              "name": "Microsoft.Databricks-workspaces_UseOnly_databricks-worker-to-storage",
+              "properties": {
+                "description": "Required for workers communication with Azure Storage services.",
+                "protocol": "tcp",
+                "sourcePortRange": "*",
+                "destinationPortRange": "443",
+                "sourceAddressPrefix": "VirtualNetwork",
+                "destinationAddressPrefix": "Storage",
+                "access": "Allow",
+                "priority": 102,
+                "direction": "Outbound",
+                "sourcePortRanges": [],
+                "destinationPortRanges": [],
+                "sourceAddressPrefixes": [],
+                "destinationAddressPrefixes": []
+              }
+            },
+            {
+              "name": "Microsoft.Databricks-workspaces_UseOnly_databricks-worker-to-worker-outbound",
+              "properties": {
+                "description": "Required for worker nodes communication within a cluster.",
+                "protocol": "*",
+                "sourcePortRange": "*",
+                "destinationPortRange": "*",
+                "sourceAddressPrefix": "VirtualNetwork",
+                "destinationAddressPrefix": "VirtualNetwork",
+                "access": "Allow",
+                "priority": 103,
+                "direction": "Outbound",
+                "sourcePortRanges": [],
+                "destinationPortRanges": [],
+                "sourceAddressPrefixes": [],
+                "destinationAddressPrefixes": []
+              }
+            },
+            {
+              "name": "Microsoft.Databricks-workspaces_UseOnly_databricks-worker-to-eventhub",
+              "properties": {
+                "description": "Required for worker communication with Azure Eventhub services.",
+                "protocol": "tcp",
+                "sourcePortRange": "*",
+                "destinationPortRange": "9093",
+                "sourceAddressPrefix": "VirtualNetwork",
+                "destinationAddressPrefix": "EventHub",
+                "access": "Allow",
+                "priority": 104,
+                "direction": "Outbound",
+                "sourcePortRanges": [],
+                "destinationPortRanges": [],
+                "sourceAddressPrefixes": [],
+                "destinationAddressPrefixes": []
+              }
+            }
+          ]
+        }
+      ]
+    },
+    "routeTables": {
+      "value": [
+        {
+          "name": "cdas-preprd-default-routetable",
+          "disableBgpRoutePropagation": "false",
+          "routes": [
+            {
+              "name": "Default_Route",
+              "properties": {
+                "addressPrefix": "0.0.0.0/0",
+                "nextHopType": "VirtualAppliance",
+                "nextHopIpAddress": "10.0.1.6"
+              }
+            },
+            {
+              "name": "Prd_Hub_Route",
+              "properties": {
+                "addressPrefix": "10.0.0.0/16",
+                "nextHopType": "VirtualAppliance",
+                "nextHopIpAddress": "10.0.1.6"
+              }
+            }
+          ]
+        },
+        {
+          "name": "cdas-preprd-wvd-routetable",
+          "disableBgpRoutePropagation": "false",
+          "routes": [
+            {
+              "name": "Default_Route",
+              "properties": {
+                "addressPrefix": "0.0.0.0/0",
+                "nextHopType": "VirtualAppliance",
+                "nextHopIpAddress": "10.0.1.6"
+              }
+            },
+            {
+              "name": "Prd_Hub_Route",
+              "properties": {
+                "addressPrefix": "10.0.0.0/16",
+                "nextHopType": "VirtualAppliance",
+                "nextHopIpAddress": "10.0.1.6"
+              }
+            },
+            {
+              "name": "PreProd_Vnet",
+              "properties": {
+                "addressPrefix": "10.10.0.0/16",
+                "nextHopType": "VirtualAppliance",
+                "nextHopIpAddress": "10.0.1.6"
+              }
+            },
+            {
+              "name": "Intra_Subnet",
+              "properties": {
+                "addressPrefix": "10.10.9.0/24",
+                "nextHopType": "VnetLocal"
+              }
+            }
+          ]
+        },
+        {
+          "name": "cdas-preprd-ADLS-routetable",
+          "disableBgpRoutePropagation": "false",
+          "routes": [
+            {
+              "name": "Default_Route",
+              "properties": {
+                "addressPrefix": "0.0.0.0/0",
+                "nextHopType": "VirtualAppliance",
+                "nextHopIpAddress": "10.0.1.6"
+              }
+            },
+            {
+              "name": "Prd_Hub_Route",
+              "properties": {
+                "addressPrefix": "10.0.0.0/16",
+                "nextHopType": "VirtualAppliance",
+                "nextHopIpAddress": "10.0.1.6"
+              }
+            },
+            {
+              "name": "PreProd_Vnet",
+              "properties": {
+                "addressPrefix": "10.10.0.0/16",
+                "nextHopType": "VirtualAppliance",
+                "nextHopIpAddress": "10.0.1.6"
+              }
+            },
+            {
+              "name": "Intra_Subnet",
+              "properties": {
+                "addressPrefix": "10.10.0.64/26",
+                "nextHopType": "VnetLocal"
+              }
+            }
+          ]
+        },
+        {
+          "name": "cdas-preprd-datatransfer-routetable",
+          "disableBgpRoutePropagation": "false",
+          "routes": [
+            {
+              "name": "Default_Route",
+              "properties": {
+                "addressPrefix": "0.0.0.0/0",
+                "nextHopType": "VirtualAppliance",
+                "nextHopIpAddress": "10.0.1.6"
+              }
+            },
+            {
+              "name": "Prd_Hub_Route",
+              "properties": {
+                "addressPrefix": "10.0.0.0/16",
+                "nextHopType": "VirtualAppliance",
+                "nextHopIpAddress": "10.0.1.6"
+              }
+            },
+            {
+              "name": "PreProd_Vnet",
+              "properties": {
+                "addressPrefix": "10.10.0.0/16",
+                "nextHopType": "VirtualAppliance",
+                "nextHopIpAddress": "10.0.1.6"
+              }
+            },
+            {
+              "name": "Intra_Subnet",
+              "properties": {
+                "addressPrefix": "10.10.0.0/27",
+                "nextHopType": "VnetLocal"
+              }
+            },
+            {
+              "name": "InformaticaData_Subnet",
+              "properties": {
+                "addressPrefix": "10.10.2.0/27",
+                "nextHopType": "VnetLocal"
+              }
+            }
+          ]
+        },
+        {
+          "name": "cdas-preprd-tableau-routetable",
+          "disableBgpRoutePropagation": "false",
+          "routes": [
+            {
+              "name": "Default_Route",
+              "properties": {
+                "addressPrefix": "0.0.0.0/0",
+                "nextHopType": "VirtualAppliance",
+                "nextHopIpAddress": "10.0.1.6"
+              }
+            },
+            {
+              "name": "Prd_Hub_Route",
+              "properties": {
+                "addressPrefix": "10.0.0.0/16",
+                "nextHopType": "VirtualAppliance",
+                "nextHopIpAddress": "10.0.1.6"
+              }
+            },
+            {
+              "name": "PreProd_Vnet",
+              "properties": {
+                "addressPrefix": "10.10.0.0/16",
+                "nextHopType": "VirtualAppliance",
+                "nextHopIpAddress": "10.0.1.6"
+              }
+            },
+            {
+              "name": "Intra_Subnet",
+              "properties": {
+                "addressPrefix": "10.10.3.0/27",
+                "nextHopType": "VnetLocal"
+              }
+            },
+            {
+              "name": "InformaticaData_Subnet",
+              "properties": {
+                "addressPrefix": "10.10.2.0/27",
+                "nextHopType": "VnetLocal"
+              }
+            }
+          ]
+        },
+        {
+          "name": "cdas-preprd-infa-routetable",
+          "disableBgpRoutePropagation": "false",
+          "routes": [
+            {
+              "name": "Default_Route",
+              "properties": {
+                "addressPrefix": "0.0.0.0/0",
+                "nextHopType": "VirtualAppliance",
+                "nextHopIpAddress": "10.0.1.6"
+              }
+            },
+            {
+              "name": "Prd_Hub_Route",
+              "properties": {
+                "addressPrefix": "10.0.0.0/16",
+                "nextHopType": "VirtualAppliance",
+                "nextHopIpAddress": "10.0.1.6"
+              }
+            },
+            {
+              "name": "PreProd_Vnet",
+              "properties": {
+                "addressPrefix": "10.10.0.0/16",
+                "nextHopType": "VirtualAppliance",
+                "nextHopIpAddress": "10.0.1.6"
+              }
+            },
+            {
+              "name": "Informatica_Subnet",
+              "properties": {
+                "addressPrefix": "10.10.1.0/24",
+                "nextHopType": "VnetLocal"
+              }
+            },
+            {
+              "name": "InformaticaData_Subnet",
+              "properties": {
+                "addressPrefix": "10.10.2.0/27",
+                "nextHopType": "VnetLocal"
+              }
+            }
+          ]
+        },
+        {
+          "name": "cdas-preprd-coreservice-routetable",
+          "disableBgpRoutePropagation": "false",
+          "routes": [
+            {
+              "name": "Default_Route",
+              "properties": {
+                "addressPrefix": "0.0.0.0/0",
+                "nextHopType": "VirtualAppliance",
+                "nextHopIpAddress": "10.0.1.6"
+              }
+            },
+            {
+              "name": "Prd_Hub_Route",
+              "properties": {
+                "addressPrefix": "10.0.0.0/16",
+                "nextHopType": "VirtualAppliance",
+                "nextHopIpAddress": "10.0.1.6"
+              }
+            },
+            {
+              "name": "PreProd_Vnet",
+              "properties": {
+                "addressPrefix": "10.10.0.0/16",
+                "nextHopType": "VirtualAppliance",
+                "nextHopIpAddress": "10.0.1.6"
+              }
+            },
+            {
+              "name": "Intra_Subnet",
+              "properties": {
+                "addressPrefix": "10.10.0.64/26",
+                "nextHopType": "VnetLocal"
+              }
+            }
+          ]
+        }
+      ]
+    }
+  }
+}
