@@ -10,7 +10,7 @@ stages:
     - task: CopyFiles@2
       displayName: 'Copy ARM Template and Parameter Files'
       inputs:
-        SourceFolder: 'arm-templates'
+        SourceFolder: ''
         Contents: |
           RAM.CDAS.json
           RAM.CDAS.parameters.json
