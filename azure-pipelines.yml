@@ -38,7 +38,7 @@ stages:
           - task: AzureResourceManagerTemplateDeployment@3
             inputs:
               deploymentScope: 'Resource Group'
-              ConnectedServiceName: 'ram-sp'
+              ConnectedServiceName: 'testuser@amyid223gmail.onmicrosoft.com'
               subscriptionName: '1aa050c6-50b5-490f-b5bf-a666645cf349'
               action: 'Create Or Update Resource Group'
               resourceGroupName: 'ram-netrg'
