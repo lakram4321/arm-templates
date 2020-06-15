@@ -39,6 +39,7 @@ stages:
             inputs:
               deploymentScope: 'Resource Group'
               subscriptionName: '1aa050c6-50b5-490f-b5bf-a666645cf349'
+              ConnectedServiceName: 'ram-sp'
               action: 'Create Or Update Resource Group'
               resourceGroupName: 'ram-netrg'
               location: 'East US'
